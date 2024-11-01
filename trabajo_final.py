@@ -1,4 +1,5 @@
 import pandas as pd 
+import numpy as np 
 import math
 import random
 
@@ -10,7 +11,8 @@ def leer_estudiantes(archivo_csv):
 
 # Se guardan los nombres de los estudiantes 
 nombre_estudiantes = leer_estudiantes('data.csv')
-# print(nombre_estudiantes)
+print(type(nombre_estudiantes))
+nombre_estudiantes = np.array(nombre_estudiantes['Nombres'])
 
 # Crear listas con los datos
 materias = [
@@ -59,7 +61,7 @@ df = pd.DataFrame({
 
 # Añadir una columna con el número de orden
 df.index = range(1, len(df) + 1)
-#print(df)
+print(df)
 
 # puede ser una opción de almacenamiento
 #materias_del_semestre = pd.DataFrame(data_semestre)
@@ -76,8 +78,75 @@ grupos = [] # el total de grupos que hay por semestre
 cupo_aula_semestre = [40, 40, 40, 35, 35, 35, 25, 25, 25, 10] # Cupos por aula en cada semestre 
 
 
+# Notas primer semestre de los estudiantes 
+# En esta primera función necesitamos generar las notas de las nmaterias del primer
+# semestre y de los diez pero necesitamos generar notas por materia serian en total 6000 notas en este primner semestre 
+# mas otra linea con el promedio de las notas para descartar el 30 porciento de los estudiantes 
+
+materias_semestre1 = df[df['Semestre'] == 1]
+print(materias_semestre1)
+
+def notas_primer_semestre(estudiantes, numero_de_estudiantes, materias): # voy a intentar generar un dataframe  
+
+    num_es_aprobados = int(numero_de_estudiantes * 0.7) # 700
+    num_es_reprobados = numero_de_estudiantes - num_es_aprobados # 300  
+
+    materias_semestre1 = materias[materias['Semestre'] == 1] # Materias primer semestre 
+
+    materias_semestre1 = np.array(materias_semestre1['Materia']) # solo las materias 
+
+    # Notas del 70 porciento mayor a 3 
+    notas_aprobados = np.random.uniform(3, 5, size=(num_es_aprobados, materias_semestre1))
+    notas_reprobados = np.random.uniform(0, 3, size=(num_es_reprobados, materias_semestre1))
+    
+    # vstack para combinar las dos matrices
+    notas = np.vstack((notas_aprobados, notas_reprobados))
+
+    # generar promedio notas 
+    promedio_semestre = notas.mean(axis=1)
+
+    notas_semestre = pd.DataFrame(estudiantes, notas, columns=[f'Materia {i}' for i in materias_semestre1])
+    notas_semestre['Promedio'] = promedio_semestre
+
+    return notas_semestre
+
+resultado = notas_primer_semestre(nombre_estudiantes, total_estudiantes, df)
+print(resultado)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Esta función esta hecha pero necesitamos eliminar los estuidantes que se van sacando por cada semestre
-def gen_total_grupo(semestre):
+'''def gen_total_grupo(semestre):
     contador = 0 # para seguir cada semestre 
     while contador < 10: 
         semestre = list(semestre)
@@ -147,3 +216,4 @@ def grupos_por_materia(dataframe):
 
 df['Cupo'] = grupos_por_materia(df)
 print(df)
+'''
