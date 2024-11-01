@@ -11,8 +11,8 @@ def leer_estudiantes(archivo_csv):
 
 # Se guardan los nombres de los estudiantes 
 nombre_estudiantes = leer_estudiantes('data.csv')
+print(nombre_estudiantes)
 print(type(nombre_estudiantes))
-nombre_estudiantes = np.array(nombre_estudiantes['Nombres'])
 
 # Crear listas con los datos
 materias = [
@@ -83,21 +83,22 @@ cupo_aula_semestre = [40, 40, 40, 35, 35, 35, 25, 25, 25, 10] # Cupos por aula e
 # semestre y de los diez pero necesitamos generar notas por materia serian en total 6000 notas en este primner semestre 
 # mas otra linea con el promedio de las notas para descartar el 30 porciento de los estudiantes 
 
-materias_semestre1 = df[df['Semestre'] == 1]
-print(materias_semestre1)
+
+#materias_semestre1 = df[df['Semestre'] == 1]
+#print(materias_semestre1)
 
 def notas_primer_semestre(estudiantes, numero_de_estudiantes, materias): # voy a intentar generar un dataframe  
 
     num_es_aprobados = int(numero_de_estudiantes * 0.7) # 700
     num_es_reprobados = numero_de_estudiantes - num_es_aprobados # 300  
 
-    materias_semestre1 = materias[materias['Semestre'] == 1] # Materias primer semestre 
+    info_semestre1 = materias[materias['Semestre'] == 1] # Materias primer semestre 
 
-    materias_semestre1 = np.array(materias_semestre1['Materia']) # solo las materias 
+    materias_semestre1 = np.array(info_semestre1['Materia']) # solo las materias 
 
     # Notas del 70 porciento mayor a 3 
-    notas_aprobados = np.random.uniform(3, 5, size=(num_es_aprobados, materias_semestre1))
-    notas_reprobados = np.random.uniform(0, 3, size=(num_es_reprobados, materias_semestre1))
+    notas_aprobados = np.random.uniform(3, 5, size=(num_es_aprobados, len(materias_semestre1)))
+    notas_reprobados = np.random.uniform(0, 3, size=(num_es_reprobados, len(materias_semestre1)))
     
     # vstack para combinar las dos matrices
     notas = np.vstack((notas_aprobados, notas_reprobados))
@@ -105,14 +106,51 @@ def notas_primer_semestre(estudiantes, numero_de_estudiantes, materias): # voy a
     # generar promedio notas 
     promedio_semestre = notas.mean(axis=1)
 
-    notas_semestre = pd.DataFrame(estudiantes, notas, columns=[f'Materia {i}' for i in materias_semestre1])
+    notas_semestre = pd.DataFrame(notas, columns=materias_semestre1)
     notas_semestre['Promedio'] = promedio_semestre
+    notas_semestre.index = estudiantes['Nombre&Apellido'] 
 
     return notas_semestre
 
 resultado = notas_primer_semestre(nombre_estudiantes, total_estudiantes, df)
-print(resultado)
 
+estudiantes_aprobados_semestre1 = resultado[resultado['Promedio'] >= 3]
+print("Estudiantes con promedio mayor o igual a 3: ")
+print(estudiantes_aprobados_semestre1)
+
+
+#Notas del segundo semestre 
+
+def notas_segundo_semestre(estudiantes_aprobados_semestre1, materias):
+
+    num_es_aprobados = int(len(estudiantes_aprobados_semestre1) * 0.7) # 700
+    num_es_reprobados = len(estudiantes_aprobados_semestre1) - num_es_aprobados # 300  
+
+    info_semestre2 = materias[materias['Semestre'] == 2] # Materias primer semestre 
+
+    materias_semestre2 = np.array(info_semestre2['Materia']) # solo las materias 
+
+    # Notas del 70 porciento mayor a 3 
+    notas_aprobados = np.random.uniform(3, 5, size=(num_es_aprobados, len(materias_semestre2)))
+    notas_reprobados = np.random.uniform(0, 3, size=(num_es_reprobados, len(materias_semestre2)))
+
+    # vstack para combinar las dos matrices
+    notas = np.vstack((notas_reprobados, notas_aprobados))
+
+    # generar promedio notas 
+    promedio_semestre = notas.mean(axis=1)
+
+    notas_semestre = pd.DataFrame(notas, columns=materias_semestre2)
+    notas_semestre['Promedio'] = promedio_semestre
+    notas_semestre.index = estudiantes_aprobados_semestre1.index 
+
+    return notas_semestre
+
+resultado = notas_segundo_semestre(estudiantes_aprobados_semestre1, df)
+
+estudiantes_aprobados_semestre2 = resultado[resultado['Promedio'] >= 3]
+print("Estudiantes con promedio mayor o igual a 3: ")
+print(estudiantes_aprobados_semestre2)
 
 
 
