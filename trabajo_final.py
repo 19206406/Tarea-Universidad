@@ -102,6 +102,7 @@ def notas_primer_semestre(estudiantes, numero_de_estudiantes, materias): # voy a
     
     # vstack para combinar las dos matrices
     notas = np.vstack((notas_aprobados, notas_reprobados))
+    np.random.shuffle(notas)
 
     # generar promedio notas 
     promedio_semestre = notas.mean(axis=1)
@@ -123,8 +124,8 @@ print(estudiantes_aprobados_semestre1)
 
 def notas_segundo_semestre(estudiantes_aprobados_semestre1, materias):
 
-    num_es_aprobados = int(len(estudiantes_aprobados_semestre1) * 0.7) # 700
-    num_es_reprobados = len(estudiantes_aprobados_semestre1) - num_es_aprobados # 300  
+    num_es_aprobados = int(len(estudiantes_aprobados_semestre1) * 0.7) # 490 # Modificar para aproximar estudiantes hacia arriba 
+    num_es_reprobados = len(estudiantes_aprobados_semestre1) - num_es_aprobados # 210 # Modificar para aproximar estudiantes hacia arriba
 
     info_semestre2 = materias[materias['Semestre'] == 2] # Materias primer semestre 
 
@@ -135,7 +136,9 @@ def notas_segundo_semestre(estudiantes_aprobados_semestre1, materias):
     notas_reprobados = np.random.uniform(0, 3, size=(num_es_reprobados, len(materias_semestre2)))
 
     # vstack para combinar las dos matrices
-    notas = np.vstack((notas_reprobados, notas_aprobados))
+
+    notas = np.vstack((notas_reprobados, notas_aprobados)) # Arreglar 
+    np.random.shuffle(notas)
 
     # generar promedio notas 
     promedio_semestre = notas.mean(axis=1)
@@ -152,10 +155,7 @@ estudiantes_aprobados_semestre2 = resultado[resultado['Promedio'] >= 3]
 print("Estudiantes con promedio mayor o igual a 3: ")
 print(estudiantes_aprobados_semestre2)
 
-
-
-
-
+# que se aproben 1 por cada uno 
 
 
 
@@ -184,7 +184,7 @@ print(estudiantes_aprobados_semestre2)
 
 
 # Esta función esta hecha pero necesitamos eliminar los estuidantes que se van sacando por cada semestre
-'''def gen_total_grupo(semestre):
+def gen_total_grupo(semestre):
     contador = 0 # para seguir cada semestre 
     while contador < 10: 
         semestre = list(semestre)
@@ -208,7 +208,7 @@ def generar_codigo(dataframe):
     materias_codigos = []
     
     while i < len(dataframe):
-        codex = f'{str(dataframe.iloc[i][0][0:3]).upper()}{dataframe.iloc[i][1]}{dataframe.iloc[i][2]}'
+        codex = f'{str(dataframe.iloc[i][0][0:3]).upper()}{dataframe.iloc[i][1]}{dataframe.iloc[i][2]}'+str(i+1)
         materias_codigos.append(codex)
         i += 1
     
@@ -253,5 +253,54 @@ def grupos_por_materia(dataframe):
     return frame_cupos
 
 df['Cupo'] = grupos_por_materia(df)
+#print(df)
+
+
+
+# Numero de estudiantes por cada materia en cada semestre 
+# Necesito hacer una manera de reunir un dataframe con el total de materias
+# Y luego calcular la cantidad de estudiantes para cada semestre y esta va ha ser la cantidad de estudiantes
+# Por cada asignatura del semestre 
+
+# Recursos necesarios
+# Todos las personas que pasan cada semestre : 
+    # Necesito un array o un vector con el total de estudiantes cada semestre 
+# Y el primer dataframe con el uso 
+# de todas las asignaturas del semestre 
+# Luego crear una nueva columna y ya todo esta lista 
+print(len(df))
+
+estudiantes_semestre = np.array([1000, 700, 490, 343, 241, 169, 118, 83, 58, 41])
+def numero_estudiantes_materias(dataframe, numeros_estudiantes): 
+    estudiantes_asignatura = []
+    j = 0
+    while j < len(dataframe):
+
+        match int(dataframe.iloc[j][1]): 
+            case 1: 
+                estudiantes_asignatura.append(numeros_estudiantes[0])
+            case 2: 
+                estudiantes_asignatura.append(numeros_estudiantes[1])
+            case 3: 
+                estudiantes_asignatura.append(numeros_estudiantes[2])
+            case 4: 
+                estudiantes_asignatura.append(numeros_estudiantes[3])
+            case 5: 
+                estudiantes_asignatura.append(numeros_estudiantes[4])
+            case 6: 
+                estudiantes_asignatura.append(numeros_estudiantes[5])
+            case 7: 
+                estudiantes_asignatura.append(numeros_estudiantes[6])
+            case 8:
+                estudiantes_asignatura.append(numeros_estudiantes[7])
+            case 9: 
+                estudiantes_asignatura.append(numeros_estudiantes[8])
+            case 10: 
+                estudiantes_asignatura.append(numeros_estudiantes[9])
+
+        j += 1
+
+    return estudiantes_asignatura
+
+df['Estudiantes'] = numero_estudiantes_materias(df, estudiantes_semestre)
 print(df)
-'''
